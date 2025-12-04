@@ -60,10 +60,10 @@ struct CSSRootComponent
 
 			Array<Selector> selectors;
 			StyleSheet::Ptr ss;
-			Rectangle<float> globalBounds;
-			Rectangle<float> textBounds;
+			juce::Rectangle<float> globalBounds;
+			juce::Rectangle<float> textBounds;
 			Component::SafePointer<Component> c;
-			Rectangle<float> textPosition;
+			juce::Rectangle<float> textPosition;
 		};
 
 		InfoOverlay(CSSRootComponent& parent);
@@ -102,7 +102,7 @@ struct CSSRootComponent
 			return {};
 		}
 
-		void applyPosition(const Rectangle<int>& screenBoundsOfTooltipClient, Rectangle<int>& tooltipRectangleAtOrigin) override
+		void applyPosition(const juce::Rectangle<int>& screenBoundsOfTooltipClient, juce::Rectangle<int>& tooltipRectangleAtOrigin) override
 		{
 			if(currentlyHovered != nullptr)
 			{
@@ -119,7 +119,7 @@ struct CSSRootComponent
 	struct InspectorData
 	{
 		Component::SafePointer<Component> c;
-		Rectangle<float> first;
+		juce::Rectangle<float> first;
 		String second;
 
 		bool operator!=(const InspectorData& other) const
@@ -137,7 +137,7 @@ struct CSSRootComponent
 			return c != nullptr && !first.isEmpty() && second.trim() != "div";
 		}
 
-		void draw(Graphics& g, Rectangle<float> lb, StyleSheet::Collection& css) const;
+		void draw(Graphics& g, juce::Rectangle<float> lb, StyleSheet::Collection& css) const;
 	};
 
 	struct CSSDebugger: public Component,
@@ -286,7 +286,7 @@ struct CSSRootComponent
 
 
 /** This helper class will use a style sheet collection to slice an area in order to calculate the UI layout.
- *  The syntax of the methods mimic the juce::Rectangle<> class so you can apply the proven slicing workflow
+ *  The syntax of the methods mimic the juce::juce::Rectangle<> class so you can apply the proven slicing workflow
  *	when defining your component layout.
  *
  *	Note: you can also use the FlexboxComponent for UI layout.
@@ -303,7 +303,7 @@ class Positioner
 
 	struct RemoveHelpers
 	{
-		template <Direction D> static Rectangle<float> slice(Rectangle<float>& area, float amount)
+		template <Direction D> static juce::Rectangle<float> slice(juce::Rectangle<float>& area, float amount)
 		{
 			switch(D)
 			{
@@ -314,13 +314,13 @@ class Positioner
 			}
 		}
 
-		template <Direction D> static Rectangle<float> shrink(Rectangle<float> area, float amount)
+		template <Direction D> static juce::Rectangle<float> shrink(juce::Rectangle<float> area, float amount)
 		{
 			return slice<D>(area, amount);
 		}
 	};
 
-	template <Direction D> Rectangle<float> slice(const Array<Selector>& s, float defaultValue)
+	template <Direction D> juce::Rectangle<float> slice(const Array<Selector>& s, float defaultValue)
 	{
 		if(auto ss = css.getWithAllStates(nullptr, s.getFirst()))
 		{
@@ -330,10 +330,10 @@ class Positioner
 			auto h = ss->getPixelValue(totalArea, { key, {} }, defaultValue);
 			auto positionType = ss->getPositionType({});
 
-			Rectangle<float> copy = totalArea;
+			juce::Rectangle<float> copyRectangle = totalArea;
 
 			auto shouldShrink = positionType == PositionType::absolute || positionType == PositionType::fixed;
-			auto& toUse = shouldShrink ? copy : totalArea;
+			auto& toUse = shouldShrink ? copyRectangle : totalArea;
 			auto b = RemoveHelpers::slice<D>(toUse, h);
 			b = ss->getBounds(b, {});
 
@@ -350,34 +350,34 @@ public:
 
 	/** Creates a positioner for the given CSS collection and a given area (usually the component bounds).
 	 *
-	 *  If applyMargin is true, the rectangles returned by the methods will factor in the margin of the component,
+	 *  If applyMargin is true, the juce::Rectangles returned by the methods will factor in the margin of the component,
 	 *	however in most cases you don't want that to be the case because the margin is also factored in in the
 	 *	Renderer::drawBackground() class (so it can draw box-shadows without resorting to unclipped painting).
 	 */
-	Positioner(StyleSheet::Collection styleSheet, Rectangle<float> totalArea_, bool applyMargin_=false);
+	Positioner(StyleSheet::Collection styleSheet, juce::Rectangle<float> totalArea_, bool applyMargin_=false);
 
-	/** Creates a rectangle at origin with the width and sized set to the exact dimension to display the provided text.
+	/** Creates a juce::Rectangle at origin with the width and sized set to the exact dimension to display the provided text.
 	 *  This factors in font properties and margin / padding / borders so whenever you have a component that displays a text
 	 *  use this to set it to the exact size that you know and love from your favorite web browser. */
-	Rectangle<int> getLocalBoundsFromText(const Array<Selector>& s, const String& text, Rectangle<int> defaultBounds={});
+	juce::Rectangle<int> getLocalBoundsFromText(const Array<Selector>& s, const String& text, juce::Rectangle<int> defaultBounds={});
 
-	/** Slices a rectangle from the top of the full area using the style sheet identified by the list of supplied selectors. */
-	Rectangle<float> removeFromTop(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Top>(s, defaultValue); }
+	/** Slices a juce::Rectangle from the top of the full area using the style sheet identified by the list of supplied selectors. */
+	juce::Rectangle<float> removeFromTop(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Top>(s, defaultValue); }
 
-	/** Slices a rectangle from the bottom of the full area using the style sheet identified by the list of supplied selectors. */
-	Rectangle<float> removeFromBottom(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Bottom>(s, defaultValue); }
+	/** Slices a juce::Rectangle from the bottom of the full area using the style sheet identified by the list of supplied selectors. */
+	juce::Rectangle<float> removeFromBottom(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Bottom>(s, defaultValue); }
 
-	/** Slices a rectangle from the left of the full area using the style sheet identified by the list of supplied selectors. */
-	Rectangle<float> removeFromLeft(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Left>(s, defaultValue); }
+	/** Slices a juce::Rectangle from the left of the full area using the style sheet identified by the list of supplied selectors. */
+	juce::Rectangle<float> removeFromLeft(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Left>(s, defaultValue); }
 
-	/** Slices a rectangle from the right of the full area using the style sheet identified by the list of supplied selectors. */
-	Rectangle<float> removeFromRight(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Right>(s, defaultValue); } 
+	/** Slices a juce::Rectangle from the right of the full area using the style sheet identified by the list of supplied selectors. */
+	juce::Rectangle<float> removeFromRight(const Array<Selector>& s, float defaultValue = 0.0f) { return slice<Direction::Right>(s, defaultValue); } 
 
 private:
 
 	bool applyMargin = false;
-	Rectangle<float> bodyArea;
-	Rectangle<float> totalArea;
+	juce::Rectangle<float> bodyArea;
+	juce::Rectangle<float> totalArea;
 	StyleSheet::Collection css;
 };
 
@@ -396,19 +396,19 @@ struct Renderer: public Animator::ScopedComponentSetter
 	 *  Make sure to call StateWatcher::checkState() before rendering this method in order to pick up the correct pseudo class
 	 *	to use.
 	 */
-	void drawBackground(Graphics& g, Rectangle<float> area, StyleSheet::Ptr ss, PseudoElementType type = PseudoElementType::None);
+	void drawBackground(Graphics& g, juce::Rectangle<float> area, StyleSheet::Ptr ss, PseudoElementType type = PseudoElementType::None);
 
-	void drawImage(Graphics& g, const juce::Image& img, Rectangle<float> area, StyleSheet::Ptr ss, bool isContent);
+	void drawImage(Graphics& g, const juce::Image& img, juce::Rectangle<float> area, StyleSheet::Ptr ss, bool isContent);
 
 	/** Renders a text using the supplied style sheet. */
-	void renderText(Graphics& g, Rectangle<float> area, const String& text, StyleSheet::Ptr ss, PseudoElementType type=PseudoElementType::None, Justification justificationToUse = Justification(0), bool truncateBeforeAfter=true);
+	void renderText(Graphics& g, juce::Rectangle<float> area, const String& text, StyleSheet::Ptr ss, PseudoElementType type=PseudoElementType::None, Justification justificationToUse = Justification(0), bool truncateBeforeAfter=true);
 
 	/** Manually set the state flags for the renderer. this is useful for cases where the style flags can't be easily queried
 	 *  from the component hover states (eg. at popup menu items). */
 	void setPseudoClassState(int state, bool forceOverwrite=false);
 
 	/** Sets the current colour (or gradient) for the renderer based on the supplied style sheet and property key. */
-	void setCurrentBrush(Graphics& g, StyleSheet::Ptr ss, Rectangle<float> area, const PropertyKey& key, Colour defaultColour=Colours::transparentBlack);
+	void setCurrentBrush(Graphics& g, StyleSheet::Ptr ss, juce::Rectangle<float> area, const PropertyKey& key, Colour defaultColour=Colours::transparentBlack);
 
 	/** returns the pseudo class state to use */
 	int getPseudoClassState() const;

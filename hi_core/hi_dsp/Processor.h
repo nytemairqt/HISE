@@ -731,7 +731,7 @@ public:
         
         Array<WeakReference<Processor>> allProcessors;
         
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Iterator<SubTypeProcessor>)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Iterator)
     };
     
     /** This returns a Identifier with the name of the parameter.
