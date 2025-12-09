@@ -320,8 +320,8 @@ int HlacMonolithInfo::getNumSamplesInMonolith() const
 }
 
 juce::int64 HlacMonolithInfo::getMonolithLength(int sampleIndex) const
-{
-	return (int64)jmax<int>(0, (int)sampleInfo[sampleIndex].length);
+{	
+	return (int64)std::max<int>(0, (int)sampleInfo[sampleIndex].length);
 }
 
 double HlacMonolithInfo::getMonolithSampleRate(int sampleIndex) const

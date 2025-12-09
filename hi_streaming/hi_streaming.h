@@ -60,6 +60,12 @@ END_JUCE_MODULE_DECLARATION
 #include "../JUCE/modules/juce_data_structures/juce_data_structures.h"
 #include "../JUCE/modules/juce_gui_extra/juce_gui_extra.h"
 #include "../JUCE/modules/juce_dsp/juce_dsp.h"
+
+// macOS SIMD fix
+namespace juce { namespace dsp {
+    template<> struct SIMDNativeOps<unsigned long> : SIMDNativeOps<std::uint64_t> {};
+}}
+
 #include "../hi_lac/hi_lac.h"
 
 // Note: this is only required by the faust compiler with libfaust version <2.52.6
