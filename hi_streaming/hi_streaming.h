@@ -62,9 +62,11 @@ END_JUCE_MODULE_DECLARATION
 #include "../JUCE/modules/juce_dsp/juce_dsp.h"
 
 // macOS SIMD fix
+#if defined(__APPLE__)
 namespace juce { namespace dsp {
     template<> struct SIMDNativeOps<unsigned long> : SIMDNativeOps<std::uint64_t> {};
 }}
+#endif
 
 #include "../hi_lac/hi_lac.h"
 
